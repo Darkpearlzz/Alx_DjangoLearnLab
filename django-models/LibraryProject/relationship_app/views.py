@@ -1,10 +1,9 @@
-from django.shortcuts import render, get_object_or_404
-from django.views.generic.detail import DetailView
-from .models import Library, Book
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
+from django.views.generic.detail import DetailView
+from .models import Library, Book
 
 def list_books(request):
     books = Book.objects.all()
