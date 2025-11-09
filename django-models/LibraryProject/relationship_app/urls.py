@@ -27,8 +27,8 @@ urlpatterns += [
 ]
 
 urlpatterns = [
-    path('books/', list_books, name='list_books'),
-    path('book/add/', add_book, name='add_book'),
-    path('book/<int:pk>/edit/', edit_book, name='edit_book'),
-    path('book/<int:pk>/delete/', delete_book, name='delete_book'),
+    path('books/', views.list_books, name='list_books'),  # existing list view
+    path('add_book/', views.add_book, name='add_book'),   # new add view
+    path('edit_book/<int:pk>/', views.edit_book, name='edit_book'),  # new edit view
+    path('delete_book/<int:pk>/', views.delete_book, name='delete_book'),  # optional delete view
 ]
