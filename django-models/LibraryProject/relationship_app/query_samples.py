@@ -1,7 +1,9 @@
+# relationship_app/query_samples.py
 import os
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')  
+django.setup()
 
 from relationship_app.models import Author, Book, Library, Librarian
 
@@ -11,12 +13,11 @@ def books_by_author(author_name):
     except Author.DoesNotExist:
         print(f"No author named '{author_name}'")
         return []
-    books = author.books.all()  
-    print(f"Books by {author_name}:")
+
+    books = Book.objects.filter(author=author) 
     for book in books:
         print("-", book.title)
     return list(books)
-
 
 def books_in_library(library_name):
     try:
@@ -24,12 +25,12 @@ def books_in_library(library_name):
     except Library.DoesNotExist:
         print(f"No library named '{library_name}'")
         return []
-    books = library.books.all()  
+
+    books = library.books.all()
     print(f"Books in {library_name}:")
     for book in books:
         print("-", book.title)
     return list(books)
-
 
 def librarian_for_library(library_name):
     try:
@@ -37,6 +38,7 @@ def librarian_for_library(library_name):
     except Library.DoesNotExist:
         print(f"No library named '{library_name}'")
         return None
+
     librarian = getattr(library, 'librarian', None) 
     if librarian:
         print(f"Librarian for {library_name}: {librarian.name}")
