@@ -2,11 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Book
 
-
-@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-
     list_display = ("username", "email", "date_of_birth", "is_staff")
     fieldsets = (
         (None, {"fields": ("username", "password")}),
@@ -21,5 +18,6 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
+admin.site.register(CustomUser, CustomUserAdmin)
 
 admin.site.register(Book)
