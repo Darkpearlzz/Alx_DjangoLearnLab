@@ -3,7 +3,7 @@ from .models import Author, Book
 from .serializers import AuthorSerializer, BookSerializer
 from rest_framework import generics, mixins, status, filters
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -33,14 +33,9 @@ class BookListView(generics.ListAPIView):
       - ?publication_year=<year>
       - ?search=<term> (searches title if SearchFilter is enabled)
     """
-    queryset = Book.objects.select_related('author').all()
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # read access for all, write protected elsewhere
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['author', 'publication_year']   # allow ?author=1 or ?publication_year=2020
-    search_fields = ['title']
-    ordering_fields = ['publication_year', 'title']
-    ordering = ['title']
+    permission_classes = [IsAuthenticatedOrReadOnly]  # read-only for unauthenticated users
 
 
 class BookDetailView(generics.RetrieveAPIView):
@@ -66,7 +61,7 @@ class BookCreateView(generics.CreateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticated]  # must be logged in to create
+    permission_classes = [IsAuthenticated]  # only logged-in users can create
 
     def perform_create(self, serializer):
         """
