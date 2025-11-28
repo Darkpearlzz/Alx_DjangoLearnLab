@@ -8,7 +8,7 @@ from .views import (
     BookDetailView,
     BookCreateView,
     BookUpdateView,
-    BookDeleteView
+    BookDeleteView,
 )
 
 urlpatterns = [
@@ -17,8 +17,6 @@ urlpatterns = [
     path("books/create/", BookCreateView.as_view(), name="book-create"),
     path("books/<int:pk>/update/", BookUpdateView.as_view(), name="book-update"),
     path("books/<int:pk>/delete/", BookDeleteView.as_view(), name="book-delete"),
-        path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),  # api routes
 ]
 
 router = routers.DefaultRouter()
