@@ -5,7 +5,7 @@ from rest_framework import generics, mixins, status, filters
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
-
+from django_filters import rest_framework  
 class AuthorViewSet(viewsets.ModelViewSet):
     """
     CRUD endpoints for Author.
