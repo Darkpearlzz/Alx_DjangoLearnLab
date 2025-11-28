@@ -25,18 +25,32 @@ class BookViewSet(viewsets.ModelViewSet):
 
 class BookListView(generics.ListAPIView):
     """
-    GET /books/
-    - Returns a paginated list of books.
-    - Read-only; accessible to unauthenticated users.
-    - Supports simple filtering via query params:
-      - ?author_id=<id>
-      - ?publication_year=<year>
-      - ?search=<term> (searches title if SearchFilter is enabled)
+    GET /api/books/
+    
+    Advanced querying capabilities:
+    - Filtering by fields: title, author, publication_year
+      Example: /api/books/?author=1&publication_year=2020
+    - Searching by text in title or author's name
+      Example: /api/books/?search=harry
+    - Ordering results by fields (title, publication_year)
+      Example: /api/books/?ordering=-publication_year
     """
-    queryset = Book.objects.all()
+    queryset = Book.objects.select_related('author').all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # read-only for unauthenticated users
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
+    # Backends for filtering, search, and ordering
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+
+    # Fields allowed for filtering via query params
+    filterset_fields = ['title', 'author', 'publication_year']
+
+    # Fields used for search via ?search=term
+    search_fields = ['title', 'author__name']
+
+    # Fields allowed for ordering via ?ordering=field
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']  # default ordering
 
 class BookDetailView(generics.RetrieveAPIView):
     """
