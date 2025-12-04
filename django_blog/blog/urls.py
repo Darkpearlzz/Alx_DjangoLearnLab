@@ -14,15 +14,14 @@ urlpatterns = [
     path("post/<int:pk>/update/", views.PostUpdateView.as_view(), name="post_update"),
     path("post/<int:pk>/delete/", views.PostDeleteView.as_view(), name="post_delete"),
 
-    # ----- Authentication views -----
-    path("login/", views.CustomLoginView.as_view(), name="login"),
-    path("logout/", views.CustomLogoutView.as_view(), name="logout"),
-    path("register/", views.register_view, name="register"),
-    path("profile/", views.profile_view, name="profile"),
-
         # ----- Comment CRUD -----
     path("post/<int:pk>/comment/new/", views.CommentCreateView.as_view(), name="comment_create"),
     path("comment/<int:pk>/edit/", views.CommentUpdateView.as_view(), name="comment_update"),
     path("comment/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
 
+    # ----- Authentication views -----
+    path("login/", views.CustomLoginView.as_view(), name="login"),
+    path("logout/", views.CustomLogoutView.as_view(), name="logout"),
+    path("register/", views.register_view, name="register"),
+    path("profile/", views.profile_view, name="profile"),
 ]
