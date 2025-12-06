@@ -24,4 +24,10 @@ urlpatterns = [
     path("logout/", views.CustomLogoutView.as_view(), name="logout"),
     path("register/", views.register_view, name="register"),
     path("profile/", views.profile_view, name="profile"),
+
+    # ------- Search functionality -------
+    path("search/", views.search_view, name="search"),
+
+    # --------- Filter by tag ---------
+    path("tags/<str:tag_name>/", views.posts_by_tag_view, name="posts_by_tag"),
 ]

@@ -10,7 +10,8 @@ class Post(models.Model):
     # Optional fixes:
     slug = models.SlugField(unique=True)  # if using prepopulated_fields
     is_published = models.BooleanField(default=True)  # if using in list_display
-
+    tags = models.ManyToManyField("Tag", blank=True, related_name="posts")
+    
     def __str__(self):
         return self.title
 
@@ -31,3 +32,9 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.post.title}"
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name

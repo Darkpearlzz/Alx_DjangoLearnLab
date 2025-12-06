@@ -52,3 +52,13 @@ URLs
 /profile/ → Profile management
 
 ````
+
+## Tagging
+
+- Add tags to posts by entering comma-separated values.
+- Tags appear on each post and link to a filtered view.
+
+## Search
+
+- Search posts by title, content, or tag.
+- Accessible via a search bar in the navbar.

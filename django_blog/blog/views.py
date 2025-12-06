@@ -6,18 +6,22 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
-from .forms import RegisterForm, PostForm  
-from .models import Comment, Post
+
+from django.db.models import Q  
+from .models import Post, Comment, Tag  
+from .forms import RegisterForm, PostForm
+
 
 # ----- Blog views -----
 def index(request):
     posts = Post.objects.filter(is_published=True)
     return render(request, "blog/index.html", {"posts": posts})
 
+
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk, is_published=True)
     return render(request, "blog/post_detail.html", {"post": post})
+
 
 # ----- Authentication views -----
 def register_view(request):
@@ -58,9 +62,11 @@ class PostListView(ListView):
     ordering = ["-published_date"]
     paginate_by = 5  # optional
 
+
 class PostDetailView(DetailView):
     model = Post
     template_name = "blog/post_detail.html"
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -71,6 +77,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -79,6 +86,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -89,6 +97,8 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         return self.request.user == post.author
 
+
+# ----- Comment CRUD -----
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     fields = ["content"]
@@ -103,6 +113,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy("blog:post_detail", kwargs={"pk": self.kwargs["pk"]})
 
+
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
     fields = ["content"]
@@ -111,10 +122,10 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
-        # Only the comment author can edit
 
     def get_success_url(self):
         return reverse_lazy("blog:post_detail", kwargs={"pk": self.object.post.pk})
+
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
@@ -123,7 +134,33 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
-        # Only owner can delete
 
     def get_success_url(self):
         return reverse_lazy("blog:post_detail", kwargs={"pk": self.object.post.pk})
+
+#   ------ Search functionality -------
+def search_posts(request):
+    query = request.GET.get("q", "")
+    posts = Post.objects.filter(is_published=True)
+
+    if query:
+        posts = posts.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+    return render(request, "blog/search_results.html", {
+        "posts": posts,
+        "query": query
+    })
+
+# ---------- Filter by tag ---------
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = Post.objects.filter(tags=tag, is_published=True)
+    return render(request, "blog/tag_posts.html", {"tag": tag, "posts": posts})
+
+def posts_by_tag_view(request, tag_name):
+    posts = Post.objects.filter(tags__name=tag_name, is_published=True)
+    return render(request, "blog/posts_by_tag.html", {"posts": posts, "tag_name": tag_name})

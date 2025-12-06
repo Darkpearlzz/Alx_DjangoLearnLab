@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post
 from .models import Comment
+from .models import Tag
 
 
 class RegisterForm(UserCreationForm):
@@ -13,9 +14,11 @@ class RegisterForm(UserCreationForm):
         fields = ["username", "email", "password1", "password2"]
 
 class PostForm(forms.ModelForm):
+    tags = forms.CharField(required=False, help_text="Separate tags with commas")
+
     class Meta:
         model = Post
-        fields = ["title", "content"]  # author is set automatically
+        fields = ["title", "content", "tags"]
 
 class CommentForm(forms.ModelForm):
     class Meta:
