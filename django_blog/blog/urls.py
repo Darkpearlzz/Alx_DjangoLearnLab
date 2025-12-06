@@ -26,7 +26,7 @@ urlpatterns = [
     path("profile/", views.profile_view, name="profile"),
 
     # ------- Search functionality -------
-    path("search/", views.search_view, name="search"),
+    path("search/", views.search_posts, name="search_posts"),
 
     # --------- Filter by tag ---------
     path("tags/<str:tag_name>/", views.posts_by_tag_view, name="posts_by_tag"),
