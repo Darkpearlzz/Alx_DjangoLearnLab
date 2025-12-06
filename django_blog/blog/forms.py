@@ -23,6 +23,7 @@ class PostForm(forms.ModelForm):
         widgets = {
             'tags': TagWidget(),  # use TagWidget for the tags field
         }
+        
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
