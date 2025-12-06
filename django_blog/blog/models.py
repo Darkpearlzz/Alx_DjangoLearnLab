@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from taggit.managers import TaggableManager
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -11,6 +11,7 @@ class Post(models.Model):
     slug = models.SlugField(unique=True)  # if using prepopulated_fields
     is_published = models.BooleanField(default=True)  # if using in list_display
     tags = models.ManyToManyField("Tag", blank=True, related_name="posts")
+    tags = TaggableManager()
     
     def __str__(self):
         return self.title
