@@ -5,13 +5,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, permissions
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from .serializers import RegisterSerializer, UserSerializer, PostSerializer
-from .models import Post
-
-
-User = get_user_model()
+from .models import CustomUser  
+from .serializers import RegisterSerializer, UserSerializer
 
 @api_view(['POST'])
 def register_user(request):
@@ -45,14 +40,11 @@ def login_user(request):
 
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
 
-    def post(self, request, user_id):
-        try:
-            user_to_follow = self.get_queryset().get(pk=user_id)
-        except User.DoesNotExist:
-            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-
+    def post(self, request, pk):
+        user_to_follow = self.get_object()
+        
         if user_to_follow == request.user:
             return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,24 +53,10 @@ class FollowUserView(generics.GenericAPIView):
 
 class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
 
-    def post(self, request, user_id):
-        try:
-            user_to_unfollow = self.get_queryset().get(pk=user_id)
-        except User.DoesNotExist:
-            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-
+    def post(self, request, pk):
+        user_to_unfollow = self.get_object()
+        
         request.user.following.remove(user_to_unfollow)
         return Response({"message": f"You have unfollowed {user_to_unfollow.username}"}, status=status.HTTP_200_OK)
-    
-class FeedView(generics.ListAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        
-        following_users = user.following.all()
-        
-        return Post.objects.filter(author__in=following_users).order_by('-created_at')
