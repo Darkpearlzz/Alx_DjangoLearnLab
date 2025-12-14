@@ -146,9 +146,9 @@ env = environ.Env()
 environ.Env.read_env()
 
 SECRET_KEY = env('SECRET_KEY', default='unsafe-secret-key')
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['darkpearlzz.pythonanywhere.com']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
